@@ -18,7 +18,13 @@ class UniqueKey:
 
 class ForeignKey:
 
-    def __init__(self, source_table: str, source_columns: Sequence[str], destination_table: str, destination_columns: Sequence[str]) -> None:
+    def __init__(
+            self,
+            source_table: str,
+            source_columns: Sequence[str],
+            destination_table: str,
+            destination_columns: Sequence[str]
+        ) -> None:
         if len(source_columns) != len(destination_columns):
             raise ValueError
         if len(set(source_columns)) != len(set(destination_columns)):
@@ -59,9 +65,15 @@ def list_primary_keys(meta: sqlalchemy.MetaData) -> List[UniqueKey]:
         for table in meta.tables.values()
     ]
 
-def list_unique_keys(meta: sqlalchemy.MetaData, engine: sqlalchemy.engine.Engine) -> List[UniqueKey]:
+def list_unique_keys(
+        meta: sqlalchemy.MetaData,
+        engine: sqlalchemy.engine.Engine
+    ) -> List[UniqueKey]:
 
-    def table_unique_keys(inspector: sqlalchemy.engine.reflection.Inspector, table: sqlalchemy.sql.schema.Table) -> Iterable[UniqueKey]:
+    def table_unique_keys(
+            inspector: sqlalchemy.engine.reflection.Inspector,
+            table: sqlalchemy.sql.schema.Table
+        ) -> Iterable[UniqueKey]:
         return [
             UniqueKey(table.name, constraint["column_names"])
             for constraint in inspector.get_unique_constraints(table.name, table.schema)
