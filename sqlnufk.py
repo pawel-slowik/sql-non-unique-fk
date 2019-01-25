@@ -46,7 +46,7 @@ class ForeignKey:
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ForeignKey):
-            return super().__eq__(self, other)
+            return super().__eq__(other)
         return (
             self.source_table == other.source_table
             and self.source_columns == other.source_columns
@@ -56,7 +56,7 @@ class ForeignKey:
 
     def __lt__(self, other: Any) -> bool:
         if not isinstance(other, ForeignKey):
-            return super().__eq__(self, other)
+            return super().__eq__(other)
         return str(self) < str(other)
 
 def list_primary_keys(meta: sqlalchemy.MetaData) -> List[UniqueKey]:
