@@ -4,20 +4,21 @@ import sys
 import os.path
 import configparser
 import itertools
+from typing import Iterable, Sequence, List, Any
 import sqlalchemy
 
 class UniqueKey:
 
-    def __init__(self, table, columns):
+    def __init__(self, table: str, columns: Iterable[str]) -> None:
         self.table = table
         self.columns = set(columns)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s<%s(%s)>" % (self.__class__.__name__, self.table, ", ".join(self.columns))
 
 class ForeignKey:
 
-    def __init__(self, source_table, source_columns, destination_table, destination_columns):
+    def __init__(self, source_table: str, source_columns: Sequence[str], destination_table: str, destination_columns: Sequence[str]) -> None:
         if len(source_columns) != len(destination_columns):
             raise ValueError
         if len(set(source_columns)) != len(set(destination_columns)):
@@ -27,17 +28,17 @@ class ForeignKey:
         self.destination_table = destination_table
         self.destination_columns = set(destination_columns)
 
-    def destination_matches(self, key):
+    def destination_matches(self, key: UniqueKey) -> bool:
         return self.destination_table == key.table and self.destination_columns == key.columns
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "%s<%s(%s) -> %s(%s)>" % (
             self.__class__.__name__,
             self.source_table, ", ".join(self.source_columns),
             self.destination_table, ", ".join(self.destination_columns),
         )
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ForeignKey):
             return super().__eq__(self, other)
         return (
@@ -47,20 +48,20 @@ class ForeignKey:
             and self.destination_columns == other.destination_columns
         )
 
-    def __lt__(self, other):
+    def __lt__(self, other: Any) -> bool:
         if not isinstance(other, ForeignKey):
             return super().__eq__(self, other)
         return str(self) < str(other)
 
-def list_primary_keys(meta):
+def list_primary_keys(meta: sqlalchemy.MetaData) -> List[UniqueKey]:
     return [
         UniqueKey(table.name, [c.name for c in table.primary_key.columns])
         for table in meta.tables.values()
     ]
 
-def list_unique_keys(meta, engine):
+def list_unique_keys(meta: sqlalchemy.MetaData, engine: sqlalchemy.engine.Engine) -> List[UniqueKey]:
 
-    def table_unique_keys(inspector, table):
+    def table_unique_keys(inspector: sqlalchemy.engine.reflection.Inspector, table: sqlalchemy.sql.schema.Table) -> Iterable[UniqueKey]:
         return [
             UniqueKey(table.name, constraint["column_names"])
             for constraint in inspector.get_unique_constraints(table.name, table.schema)
@@ -69,9 +70,9 @@ def list_unique_keys(meta, engine):
     inspector = sqlalchemy.engine.reflection.Inspector.from_engine(engine)
     return flatten([table_unique_keys(inspector, table) for table in meta.tables.values()])
 
-def list_foreign_keys(meta):
+def list_foreign_keys(meta: sqlalchemy.MetaData) -> List[ForeignKey]:
 
-    def table_foreign_keys(table):
+    def table_foreign_keys(table: sqlalchemy.sql.schema.Table) -> List[ForeignKey]:
         return [
             ForeignKey(
                 table.name,
@@ -84,19 +85,19 @@ def list_foreign_keys(meta):
 
     return flatten([table_foreign_keys(table) for table in meta.tables.values()])
 
-def list_non_unique_foreign_keys(engine):
+def list_non_unique_foreign_keys(engine: sqlalchemy.engine.Engine) -> Iterable[ForeignKey]:
     meta = sqlalchemy.MetaData()
     meta.reflect(bind=engine)
     unique_keys = list_primary_keys(meta) + list_unique_keys(meta, engine)
     return [fk for fk in list_foreign_keys(meta) if not check_foreign_key(fk, unique_keys)]
 
-def check_foreign_key(foreign_key, unique_keys):
+def check_foreign_key(foreign_key: ForeignKey, unique_keys: Iterable[UniqueKey]) -> bool:
     for key in unique_keys:
         if foreign_key.destination_matches(key):
             return True
     return False
 
-def url_from_mysql_config(cfg, name):
+def url_from_mysql_config(cfg: configparser.ConfigParser, name: str) -> str:
     try_section_names = [
         "client" + name,
         "client-" + name,
@@ -120,10 +121,10 @@ def url_from_mysql_config(cfg, name):
         return section_url
     return name
 
-def flatten(list2d):
+def flatten(list2d: Iterable[Iterable]) -> List:
     return list(itertools.chain.from_iterable(list2d))
 
-def main():
+def main() -> int:
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("url", help="database URL or MySQL option group suffix")

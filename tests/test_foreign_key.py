@@ -4,7 +4,7 @@ from sqlnufk import ForeignKey, list_non_unique_foreign_keys
 
 class TestForeignKey(unittest.TestCase):
 
-    def test_key_simple(self):
+    def test_key_simple(self) -> None:
         engine = self.db_from_sql("""
             CREATE TABLE parent (
                 id INT
@@ -20,7 +20,7 @@ class TestForeignKey(unittest.TestCase):
             [ForeignKey("child", ["parent_id"], "parent", ["id"])]
         )
 
-    def test_key_partial(self):
+    def test_key_partial(self) -> None:
         engine = self.db_from_sql("""
             CREATE TABLE parent (
                 id INT,
@@ -38,7 +38,7 @@ class TestForeignKey(unittest.TestCase):
             [ForeignKey("child", ["parent_id"], "parent", ["id"])]
         )
 
-    def test_key_composite(self):
+    def test_key_composite(self) -> None:
         engine = self.db_from_sql("""
             CREATE TABLE parent (
                 id INT,
@@ -61,7 +61,7 @@ class TestForeignKey(unittest.TestCase):
             ])
         )
 
-    def test_key_none_primary(self):
+    def test_key_none_primary(self) -> None:
         engine = self.db_from_sql("""
             CREATE TABLE parent (
                 id INT,
@@ -75,7 +75,7 @@ class TestForeignKey(unittest.TestCase):
         """)
         self.assertEqual(list_non_unique_foreign_keys(engine), [])
 
-    def test_key_none_unique(self):
+    def test_key_none_unique(self) -> None:
         engine = self.db_from_sql("""
             CREATE TABLE parent (
                 id INT,
@@ -90,7 +90,7 @@ class TestForeignKey(unittest.TestCase):
         self.assertEqual(list_non_unique_foreign_keys(engine), [])
 
     @staticmethod
-    def db_from_sql(sql):
+    def db_from_sql(sql: str) -> sqlalchemy.engine.Engine:
         engine = sqlalchemy.create_engine("sqlite://")
         for statement in sql.split(";"):
             engine.execute(statement)
