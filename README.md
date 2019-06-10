@@ -1,3 +1,8 @@
+[![Build Status][build-badge]][build-url]
+
+[build-badge]: https://travis-ci.org/pawel-slowik/sql-non-unique-fk.svg?branch=master
+[build-url]: https://travis-ci.org/pawel-slowik/sql-non-unique-fk
+
 This script inspects a SQL database to find foreign keys referring to columns
 that do not have a unique key. For example:
 
