@@ -36,8 +36,14 @@ change was not applied to the child table).
 ## Installation
 
 Clone this repository and make sure you have Python 3.x and
-[SQLAlchemy][sqlalchemy] installed. You will also need to install a
-[SQLAlchemy dialect][sqlalchemy-dialect] suitable for your database.
+[SQLAlchemy][sqlalchemy] installed:
+
+	pip3 install -r requirements.txt
+
+You will also need to install a [SQLAlchemy dialect][sqlalchemy-dialect]
+suitable for your database:
+
+	pip3 install mysqlclient
 
 [sqlalchemy]:https://www.sqlalchemy.org/
 [sqlalchemy-dialect]:https://docs.sqlalchemy.org/en/latest/dialects/index.html
@@ -47,11 +53,11 @@ Clone this repository and make sure you have Python 3.x and
 	~/path/sqlnufk.py mysql://bar_user:barP455word@host.bar/bar_database
 
 For MySQL databases you can also use an option group name instead of the
-database URL. This works similar to the `--defaults-group-suffix` parameter in
+database URL. This works similar to the `--defaults-group-suffix` parameter of
 the `mysql` command line utility. For example, if you have the following
 options saved in your `~/.my.cnf` file:
 
-	[client_bar]
+	[client_foo]
 	host=host.bar
 	database=bar_database
 	user=bar_user
@@ -59,7 +65,7 @@ options saved in your `~/.my.cnf` file:
 
 then you can run:
 
-	~/path/sqlnufk.py bar
+	~/path/sqlnufk.py foo
 
 The script will exit with code 0 if no problematic foreign keys are found.
 If problematic keys are found, they will be printed on standard output and the
