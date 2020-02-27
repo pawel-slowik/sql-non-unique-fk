@@ -31,7 +31,7 @@ may be cases where the problematic key is harder to find (for example, when the
 unique key on the referred column evolved into a multi-column key, but analogous
 change was not applied to the child table).
 
-[mysql-doc]: https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html#foreign-keys-ansi-iso-sql-standard
+[mysql-doc]: https://dev.mysql.com/doc/mysql-reslimits-excerpt/8.0/en/ansi-diff-foreign-keys.html
 
 ## Installation
 
