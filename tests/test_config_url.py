@@ -42,3 +42,8 @@ def test_url_from_config_baz(config: configparser.ConfigParser) -> None:
     test = url_from_mysql_config(config, "baz")
     expected = "mysql://baz_user@host.baz/baz_database"
     assert test == expected
+
+def test_unchanged_url_from_config(config: configparser.ConfigParser) -> None:
+    test = url_from_mysql_config(config, "no_section_with_this_name")
+    expected = "no_section_with_this_name"
+    assert test == expected
