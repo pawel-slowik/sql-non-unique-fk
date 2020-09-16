@@ -7,6 +7,7 @@ import itertools
 from typing import Iterable, Sequence, List, Any
 import sqlalchemy
 
+
 class UniqueKey:
 
     def __init__(self, table: str, columns: Iterable[str]) -> None:
@@ -15,6 +16,7 @@ class UniqueKey:
 
     def __str__(self) -> str:
         return "%s<%s(%s)>" % (self.__class__.__name__, self.table, ", ".join(self.columns))
+
 
 class ForeignKey:
 
@@ -59,11 +61,13 @@ class ForeignKey:
             return super().__eq__(other)
         return str(self) < str(other)
 
+
 def list_primary_keys(meta: sqlalchemy.MetaData) -> List[UniqueKey]:
     return [
         UniqueKey(table.name, [c.name for c in table.primary_key.columns])
         for table in meta.tables.values()
     ]
+
 
 def list_unique_keys(
         meta: sqlalchemy.MetaData,
@@ -82,6 +86,7 @@ def list_unique_keys(
     inspector = sqlalchemy.engine.reflection.Inspector.from_engine(engine)
     return flatten([table_unique_keys(inspector, table) for table in meta.tables.values()])
 
+
 def list_foreign_keys(meta: sqlalchemy.MetaData) -> List[ForeignKey]:
 
     def table_foreign_keys(table: sqlalchemy.sql.schema.Table) -> List[ForeignKey]:
@@ -97,17 +102,20 @@ def list_foreign_keys(meta: sqlalchemy.MetaData) -> List[ForeignKey]:
 
     return flatten([table_foreign_keys(table) for table in meta.tables.values()])
 
+
 def list_non_unique_foreign_keys(engine: sqlalchemy.engine.Engine) -> Iterable[ForeignKey]:
     meta = sqlalchemy.MetaData()
     meta.reflect(bind=engine)
     unique_keys = list_primary_keys(meta) + list_unique_keys(meta, engine)
     return [fk for fk in list_foreign_keys(meta) if not check_foreign_key(fk, unique_keys)]
 
+
 def check_foreign_key(foreign_key: ForeignKey, unique_keys: Iterable[UniqueKey]) -> bool:
     for key in unique_keys:
         if foreign_key.destination_matches(key):
             return True
     return False
+
 
 def url_from_mysql_config(cfg: configparser.ConfigParser, name: str) -> str:
     try_section_names = [
@@ -133,8 +141,10 @@ def url_from_mysql_config(cfg: configparser.ConfigParser, name: str) -> str:
         return section_url
     return name
 
+
 def flatten(list2d: Iterable[Iterable]) -> List:
     return list(itertools.chain.from_iterable(list2d))
+
 
 def main() -> int:
     import argparse
@@ -151,6 +161,7 @@ def main() -> int:
     for foreign_key in non_unique_foreign_keys:
         print(foreign_key)
     return 64 if non_unique_foreign_keys else 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
