@@ -1,8 +1,7 @@
-[![Build Status][build-badge]][build-url]
+![Build Status][build-badge]
 [![Coverage][coverage-badge]][coverage-url]
 
-[build-badge]: https://travis-ci.org/pawel-slowik/sql-non-unique-fk.svg?branch=master
-[build-url]: https://travis-ci.org/pawel-slowik/sql-non-unique-fk
+[build-badge]: https://github.com/pawel-slowik/sql-non-unique-fk/workflows/tests/badge.svg
 [coverage-badge]: https://codecov.io/gh/pawel-slowik/sql-non-unique-fk/branch/master/graph/badge.svg
 [coverage-url]: https://codecov.io/gh/pawel-slowik/sql-non-unique-fk
 
