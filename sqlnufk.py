@@ -4,6 +4,7 @@ import sys
 import os.path
 import configparser
 import itertools
+import argparse
 from typing import Iterable, Sequence, List, Any
 import sqlalchemy
 
@@ -147,7 +148,6 @@ def flatten(list2d: Iterable[Iterable]) -> List:
 
 
 def main() -> int:
-    import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("url", help="database URL or MySQL option group suffix")
     args = parser.parse_args()
