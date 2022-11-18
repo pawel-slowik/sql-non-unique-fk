@@ -16,7 +16,7 @@ class UniqueKey:
         self.columns = set(columns)
 
     def __str__(self) -> str:
-        return "%s<%s(%s)>" % (self.__class__.__name__, self.table, ", ".join(self.columns))
+        return f"{self.__class__.__name__}<{self.table}({', '.join(self.columns)})>"
 
 
 class ForeignKey:
@@ -41,11 +41,9 @@ class ForeignKey:
         return self.destination_table == key.table and self.destination_columns == key.columns
 
     def __str__(self) -> str:
-        return "%s<%s(%s) -> %s(%s)>" % (
-            self.__class__.__name__,
-            self.source_table, ", ".join(self.source_columns),
-            self.destination_table, ", ".join(self.destination_columns),
-        )
+        source = f"{self.source_table}({', '.join(self.source_columns)})"
+        destination = f"{self.destination_table}({', '.join(self.destination_columns)})"
+        return f"{self.__class__.__name__}<{source} -> {destination}>"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ForeignKey):
