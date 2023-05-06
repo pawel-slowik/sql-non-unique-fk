@@ -13,7 +13,7 @@ class UniqueKey:
 
     def __init__(self, table: str, columns: Iterable[str]) -> None:
         self.table = table
-        self.columns = set(columns)
+        self.columns = columns
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}<{self.table}({', '.join(self.columns)})>"
@@ -30,12 +30,10 @@ class ForeignKey:
         ) -> None:
         if len(source_columns) != len(destination_columns):
             raise ValueError
-        if len(set(source_columns)) != len(set(destination_columns)):
-            raise ValueError
         self.source_table = source_table
-        self.source_columns = set(source_columns)
+        self.source_columns = source_columns
         self.destination_table = destination_table
-        self.destination_columns = set(destination_columns)
+        self.destination_columns = destination_columns
 
     def destination_matches(self, key: UniqueKey) -> bool:
         return self.destination_table == key.table and self.destination_columns == key.columns
