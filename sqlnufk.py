@@ -66,22 +66,18 @@ def list_primary_keys(meta: sqlalchemy.MetaData) -> List[UniqueKey]:
     ]
 
 
-def list_unique_keys(
-        meta: sqlalchemy.MetaData,
-        engine: sqlalchemy.engine.Engine
-    ) -> List[UniqueKey]:
+def list_unique_keys(meta: sqlalchemy.MetaData) -> List[UniqueKey]:
 
     def table_unique_keys(
-            inspector: sqlalchemy.engine.reflection.Inspector,
             table: sqlalchemy.sql.schema.Table
         ) -> Iterable[UniqueKey]:
         return [
-            UniqueKey(table.name, constraint["column_names"])
-            for constraint in inspector.get_unique_constraints(table.name, table.schema)
+            UniqueKey(table.name, [column.name for column in constraint.columns])
+            for constraint in table.constraints
+            if isinstance(constraint, sqlalchemy.UniqueConstraint)
         ]
 
-    inspector = sqlalchemy.engine.reflection.Inspector.from_engine(engine)
-    return flatten([table_unique_keys(inspector, table) for table in meta.tables.values()])
+    return flatten([table_unique_keys(table) for table in meta.tables.values()])
 
 
 def list_foreign_keys(meta: sqlalchemy.MetaData) -> List[ForeignKey]:
@@ -103,7 +99,7 @@ def list_foreign_keys(meta: sqlalchemy.MetaData) -> List[ForeignKey]:
 def list_non_unique_foreign_keys(engine: sqlalchemy.engine.Engine) -> Iterable[ForeignKey]:
     meta = sqlalchemy.MetaData()
     meta.reflect(bind=engine)
-    unique_keys = list_primary_keys(meta) + list_unique_keys(meta, engine)
+    unique_keys = list_primary_keys(meta) + list_unique_keys(meta)
     return [fk for fk in list_foreign_keys(meta) if not check_foreign_key(fk, unique_keys)]
 
 
