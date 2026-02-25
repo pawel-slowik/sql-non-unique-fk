@@ -47,6 +47,10 @@ suitable for your database:
 [sqlalchemy]:https://www.sqlalchemy.org/
 [sqlalchemy-dialect]:https://docs.sqlalchemy.org/en/latest/dialects/index.html
 
+On Debian 13 / trixie you can use distribution provided packages, e.g.:
+
+	sudo apt-get install python3-sqlalchemy python3-mysqldb
+
 ## Example usage
 
 	~/path/sqlnufk.py mysql://bar_user:barP455word@host.bar/bar_database
