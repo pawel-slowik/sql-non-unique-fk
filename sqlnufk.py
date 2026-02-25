@@ -71,11 +71,17 @@ def list_unique_keys(meta: sqlalchemy.MetaData) -> List[UniqueKey]:
     def table_unique_keys(
             table: sqlalchemy.sql.schema.Table
         ) -> Iterable[UniqueKey]:
-        return [
+        from_constraints = [
             UniqueKey(table.name, [column.name for column in constraint.columns])
             for constraint in table.constraints
             if isinstance(constraint, sqlalchemy.UniqueConstraint)
         ]
+        from_unique_indexes = [
+            UniqueKey(table.name, [column.name for column in index.columns])
+            for index in table.indexes
+            if index.unique
+        ]
+        return from_constraints + from_unique_indexes
 
     return flatten([table_unique_keys(table) for table in meta.tables.values()])
 
